@@ -638,3 +638,10 @@ class Dataset(HLObject):
         if py3:
             return r
         return r.encode('utf8')
+
+
+    def refresh(self):
+        """ Refreshes metadata items associated with a dataset in a metadata cache.
+        Necessary when reading SWMR files that are being written.
+        """
+        return self.id.refresh()

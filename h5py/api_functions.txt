@@ -29,6 +29,8 @@ hdf5:
   haddr_t   H5Dget_offset(hid_t dset_id)
   hsize_t   H5Dget_storage_size(hid_t dset_id)
 
+  herr_t    H5Drefresh(hid_t dset_id)
+
   # These must have their return values checked manually, in order to
   # allow the GIL to be released during reading and writing.
   herr_t    H5Dread(hid_t dset_id, hid_t mem_type_id, hid_t mem_space_id, hid_t file_space_id, hid_t plist_id, void *buf)

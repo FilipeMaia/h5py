@@ -347,3 +347,11 @@ cdef class DatasetID(ObjectID):
             may even be zero.
         """
         return H5Dget_storage_size(self.id)
+        
+    def refresh(self):
+        """ ()
+
+            Refreshes metadata items associated with a dataset in a metadata cache.
+            Necessary when reading SWMR files that are being written.
+        """
+        return H5Drefresh(self.id)

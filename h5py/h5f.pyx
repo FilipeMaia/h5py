@@ -32,6 +32,8 @@ ACC_TRUNC   = H5F_ACC_TRUNC
 ACC_EXCL    = H5F_ACC_EXCL
 ACC_RDWR    = H5F_ACC_RDWR
 ACC_RDONLY  = H5F_ACC_RDONLY
+ACC_SWMR_WRITE = H5F_ACC_SWMR_WRITE
+ACC_SWMR_READ = H5F_ACC_SWMR_READ
 
 SCOPE_LOCAL     = H5F_SCOPE_LOCAL
 SCOPE_GLOBAL    = H5F_SCOPE_GLOBAL
@@ -65,6 +67,12 @@ def open(char* name, unsigned int flags=H5F_ACC_RDWR, PropFAID fapl=None):
 
     ACC_RDONLY
         Open in readonly mode
+
+    ACC_SWMR_READ
+        Open in swmr read mode
+
+    ACC_SWMR_WRITE
+        Open in swmr write mode
 
     Keyword fapl may be a file access property list.
     """

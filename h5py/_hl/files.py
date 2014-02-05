@@ -79,6 +79,8 @@ def make_fid(name, mode, userblock_size, fapl, fcpl=None):
         fid = h5f.open(name, h5f.ACC_RDONLY, fapl=fapl)
     elif mode == 'r+':
         fid = h5f.open(name, h5f.ACC_RDWR, fapl=fapl)
+    elif mode == 'r*':
+        fid = h5f.open(name, h5f.ACC_RDONLY|h5f.ACC_SWMR_READ, fapl=fapl)
     elif mode == 'w-':
         fid = h5f.create(name, h5f.ACC_EXCL, fapl=fapl, fcpl=fcpl)
     elif mode == 'w':
@@ -86,6 +88,19 @@ def make_fid(name, mode, userblock_size, fapl, fcpl=None):
     elif mode == 'a' or mode is None:
         try:
             fid = h5f.open(name, h5f.ACC_RDWR, fapl=fapl)
+            try:
+                existing_fcpl = fid.get_create_plist()
+                if (userblock_size is not None and
+                        existing_fcpl.get_userblock() != userblock_size):
+                    raise ValueError("Requested userblock size (%d) does not match that of existing file (%d)" % (userblock_size, existing_fcpl.get_userblock()))
+            except:
+                fid.close()
+                raise
+        except IOError:
+            fid = h5f.create(name, h5f.ACC_EXCL, fapl=fapl, fcpl=fcpl)
+    elif mode == 'a*' or mode is None:
+        try:
+            fid = h5f.open(name, h5f.ACC_RDWR|h5f.ACC_SWMR_WRITE, fapl=fapl)
             try:
                 existing_fcpl = fid.get_create_plist()
                 if (userblock_size is not None and
