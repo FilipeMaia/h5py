@@ -1,0 +1,18 @@
+To compile do the following:
+
+
+python api_gen.py
+
+# Replace the hdf5 directory appropriately
+python setup.py build --hdf5=/Users/filipe/src/hdf5/build/
+
+cd h5py
+cython *.pyx
+
+cd ..
+python setup.py build --hdf5=/Users/filipe/src/hdf5/build/
+
+# Optional
+python setup.py install
+
+
