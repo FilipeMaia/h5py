@@ -57,6 +57,13 @@ def make_new_dset(parent, shape=None, dtype=None, data=None,
         if data is not None and (numpy.product(shape) != numpy.product(data.shape)):
             raise ValueError("Shape tuple is incompatible with data")
 
+    tmp_shape = maxshape if maxshape is not None else shape
+    # Validate chunk shape
+    if isinstance(chunks, tuple) and (-numpy.array([ i>=j for i,j in zip(tmp_shape,chunks) if i is not None])).any():
+        errmsg = "Chunk shape must not be greater than data shape in any dimension. "\
+                 "{} is not compatible with {}".format(chunks, shape)
+        raise ValueError(errmsg)
+
     if isinstance(dtype, h5py.Datatype):
         # Named types are used as-is
         tid = dtype.id
@@ -320,8 +327,10 @@ class Dataset(HLObject):
         args = args if isinstance(args, tuple) else (args,)
 
         # Sort field indices from the rest of the args.
-        names = tuple(x for x in args if isinstance(x, str))
-        args = tuple(x for x in args if not isinstance(x, str))
+        names = tuple(x for x in args if isinstance(x, basestring))
+        args = tuple(x for x in args if not isinstance(x, basestring))
+        if not py3:
+            names = tuple(x.encode('utf-8') if isinstance(x, unicode) else x for x in names)
 
         def strip_fields(basetype):
             """ Strip extra dtype information from special types """
@@ -360,8 +369,9 @@ class Dataset(HLObject):
 
             return numpy.dtype([(name, basetype.fields[name][0]) for name in names])
 
-        if self._local.astype is not None:
-            new_dtype = readtime_dtype(self._local.astype, names)
+        new_dtype = getattr(self._local, 'astype', None)
+        if new_dtype is not None:
+            new_dtype = readtime_dtype(new_dtype, names)
         else:
             # This is necessary because in the case of array types, NumPy
             # discards the array information at the top level.
@@ -453,8 +463,10 @@ class Dataset(HLObject):
         args = args if isinstance(args, tuple) else (args,)
 
         # Sort field indices from the slicing
-        names = tuple(x for x in args if isinstance(x, str))
-        args = tuple(x for x in args if not isinstance(x, str))
+        names = tuple(x for x in args if isinstance(x, basestring))
+        args = tuple(x for x in args if not isinstance(x, basestring))
+        if not py3:
+            names = tuple(x.encode('utf-8') if isinstance(x, unicode) else x for x in names)
 
         # Generally we try to avoid converting the arrays on the Python
         # side.  However, for compound literals this is unavoidable.
