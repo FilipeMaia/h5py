@@ -1,9 +1,11 @@
 To compile do the following:
 
 
+# If everything goes well there will be no output
 python api_gen.py
 
 # Replace the hdf5 directory appropriately
+# This will fail but it is OK
 python setup.py build --hdf5=/Users/filipe/src/hdf5/build/
 
 cd h5py
